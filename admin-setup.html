@@ -23,6 +23,11 @@
       max-width: 500px;
       padding: 40px;
     }
+    @media (max-width: 600px) {
+      .setup-container {
+        padding: 30px 20px;
+      }
+    }
     .setup-header {
       text-align: center;
       margin-bottom: 30px;
@@ -94,6 +99,11 @@
       transform: translateY(-2px);
       box-shadow: 0 4px 12px rgba(15, 76, 72, 0.3);
     }
+    .btn-primary:disabled {
+      background: #999;
+      cursor: not-allowed;
+      transform: none;
+    }
     .btn-secondary {
       background: #dbe7df;
       color: #173b39;
@@ -120,6 +130,12 @@
       border-left: 4px solid #c62828;
       display: block;
     }
+    .message.info {
+      background: #e3f2fd;
+      color: #1565c0;
+      border-left: 4px solid #1565c0;
+      display: block;
+    }
     .warning-box {
       background: #fff3cd;
       border-left: 4px solid #ffc107;
@@ -128,6 +144,7 @@
       margin-bottom: 20px;
       font-size: 13px;
       color: #856404;
+      line-height: 1.5;
     }
     a {
       color: #0f4c48;
@@ -146,8 +163,10 @@
     </div>
 
     <div class="warning-box">
-      ⚠️ <strong>Important:</strong> Run this setup only ONCE. After creation, go to <a href="admin-login.html">admin-login.html</a> to log in.
+      ⚠️ <strong>Important:</strong> This setup can only run ONCE. After creation, log in at <a href="admin-login.html">admin-login.html</a>.
     </div>
+
+    <div id="message" class="message"></div>
 
     <form id="setupForm">
       <div class="form-group">
@@ -186,32 +205,37 @@
       </div>
 
       <div class="button-group">
-        <button type="submit" class="btn-primary">Create Admin Account</button>
+        <button type="submit" class="btn-primary" id="submitBtn">Create Admin Account</button>
         <button type="button" class="btn-secondary" onclick="location.href='index.html'">Cancel</button>
       </div>
     </form>
-
-    <div id="message" class="message"></div>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/bcryptjs@2.4.3/dist/bcrypt.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="admin-lib.js"></script>
   <script>
     const form = document.getElementById('setupForm');
     const messageDiv = document.getElementById('message');
-
-    // Check if admin already exists
-    window.addEventListener('load', () => {
-      const adminEmail = localStorage.getItem('admin_email');
-      if (adminEmail) {
-        showMessage('Admin account already exists! Please log in at <a href="admin-login.html">admin-login.html</a>', 'error');
-        form.style.display = 'none';
-      }
-    });
+    const submitBtn = document.getElementById('submitBtn');
 
     function showMessage(text, type) {
       messageDiv.innerHTML = text;
       messageDiv.className = `message ${type}`;
     }
+
+    // Check if already set up
+    window.addEventListener('load', async () => {
+      try {
+        const user = await getCurrentUser();
+        if (user) {
+          showMessage('Admin account already exists! <a href="admin-login.html">Go to Login</a>', 'error');
+          form.style.display = 'none';
+        }
+      } catch (error) {
+        showMessage('Supabase configuration not found. Please create supabase-config.js', 'error');
+      }
+    });
 
     function validatePassword(password) {
       const hasUpperCase = /[A-Z]/.test(password);
@@ -229,6 +253,7 @@
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
+      submitBtn.disabled = true;
 
       const email = document.getElementById('adminEmail').value.trim();
       const password = document.getElementById('adminPassword').value;
@@ -237,6 +262,7 @@
       // Validate email
       if (!email.includes('@')) {
         showMessage('Please enter a valid email address', 'error');
+        submitBtn.disabled = false;
         return;
       }
 
@@ -244,42 +270,34 @@
       const passwordError = validatePassword(password);
       if (passwordError) {
         showMessage(passwordError, 'error');
+        submitBtn.disabled = false;
         return;
       }
 
       // Confirm password match
       if (password !== confirmPassword) {
         showMessage('Passwords do not match', 'error');
+        submitBtn.disabled = false;
         return;
       }
 
       try {
-        // Hash password
-        const hashedPassword = await bcrypt.hash(password, 12);
+        showMessage('Creating admin account...', 'info');
+        const result = await adminSignUp(email, password);
 
-        // Store admin credentials (securely hashed)
-        localStorage.setItem('admin_email', email);
-        localStorage.setItem('admin_password_hash', hashedPassword);
-
-        // Initialize admin data structures
-        localStorage.setItem('admin_appointments', JSON.stringify([]));
-        localStorage.setItem('admin_inquiries', JSON.stringify([]));
-        localStorage.setItem('admin_therapists', JSON.stringify([]));
-        localStorage.setItem('admin_business_settings', JSON.stringify({
-          businessName: 'RelaxAtHome',
-          businessHours: '10:00 AM – 11:00 PM',
-          serviceAreas: ['Delhi', 'Noida', 'Gurugram'],
-          maxAppointmentsPerDay: 20
-        }));
-
-        showMessage('✓ Admin account created successfully! <a href="admin-login.html">Go to Login</a>', 'success');
-        form.reset();
-        setTimeout(() => {
-          location.href = 'admin-login.html';
-        }, 2000);
+        if (result.success) {
+          showMessage('✓ Admin account created! Check your email to confirm, then <a href="admin-login.html">log in here</a>', 'success');
+          form.reset();
+          setTimeout(() => {
+            location.href = 'admin-login.html';
+          }, 3000);
+        } else {
+          showMessage('Error: ' + result.error, 'error');
+          submitBtn.disabled = false;
+        }
       } catch (error) {
-        showMessage('Error creating account. Please try again.', 'error');
-        console.error(error);
+        showMessage('Error: ' + error.message, 'error');
+        submitBtn.disabled = false;
       }
     });
   </script>

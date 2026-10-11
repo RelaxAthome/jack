@@ -1,0 +1,8 @@
+# Environment variables - NEVER commit these
+supabase-config.js
+.env.local
+.env
+*.env
+node_modules/
+.DS_Store
+Thumbs.db
