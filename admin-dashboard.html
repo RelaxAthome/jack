@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard - RelaxAtHome</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'DM Sans', sans-serif;
+      background: #f6f5f0;
+      color: #173b39;
+    }
+    .sidebar {
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 280px;
+      height: 100vh;
+      background: #0f4c48;
+      color: #fff;
+      padding: 20px;
+      overflow-y: auto;
+      z-index: 100;
+    }
+    @media (max-width: 768px) {
+      .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+        padding: 15px;
+      }
+    }
+    .logo {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 30px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .nav-menu {
+      list-style: none;
+    }
+    .nav-item {
+      margin-bottom: 10px;
+    }
+    .nav-link {
+      display: block;
+      padding: 12px 15px;
+      color: #dbe7df;
+      text-decoration: none;
+      border-radius: 6px;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+    .nav-link:hover,
+    .nav-link.active {
+      background: #1a6b64;
+      color: #fff;
+    }
+    .nav-section {
+      margin-top: 25px;
+      padding-top: 15px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .nav-section-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: #a0b5b0;
+      padding: 0 15px;
+      margin-bottom: 10px;
+    }
+    .main-content {
+      margin-left: 280px;
+      min-height: 100vh;
+      background: #f6f5f0;
+    }
+    @media (max-width: 768px) {
+      .main-content {
+        margin-left: 0;
+      }
+    }
+    .topbar {
+      background: #fff;
+      padding: 20px 30px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    @media (max-width: 768px) {
+      .topbar {
+        padding: 15px 20px;
+      }
+    }
+    .topbar h1 {
+      font-size: 24px;
+      margin: 0;
+    }
+    .user-section {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+    .user-info {
+      text-align: right;
+      font-size: 13px;
+    }
+    .user-email {
+      font-weight: 600;
+      color: #173b39;
+    }
+    .user-role {
+      color: #647875;
+    }
+    .btn-logout {
+      padding: 8px 16px;
+      background: #c62828;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-logout:hover {
+      background: #b71c1c;
+      transform: translateY(-2px);
+    }
+    .content {
+      padding: 30px;
+    }
+    @media (max-width: 768px) {
+      .content {
+        padding: 20px;
+      }
+    }
+    .page {
+      display: none;
+    }
+    .page.active {
+      display: block;
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+    .stat-card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      text-align: center;
+    }
+    .stat-number {
+      font-size: 32px;
+      font-weight: 700;
+      color: #0f4c48;
+      margin-bottom: 8px;
+    }
+    .stat-label {
+      font-size: 13px;
+      color: #647875;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 25px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      margin-bottom: 20px;
+    }
+    .card h2 {
+      font-size: 18px;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid #dce4df;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    table th {
+      text-align: left;
+      padding: 12px;
+      background: #f6f5f0;
+      border-bottom: 2px solid #dce4df;
+      font-weight: 600;
+      color: #173b39;
+    }
+    table td {
+      padding: 12px;
+      border-bottom: 1px solid #dce4df;
+    }
+    table tr:hover {
+      background: #f9f9f7;
+    }
+    .status-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .status-confirmed {
+      background: #e8f5e9;
+      color: #2e7d32;
+    }
+    .status-pending {
+      background: #fff3cd;
+      color: #856404;
+    }
+    .status-completed {
+      background: #e3f2fd;
+      color: #1565c0;
+    }
+    .status-cancelled {
+      background: #ffebee;
+      color: #c62828;
+    }
+    .status-new {
+      background: #f3e5f5;
+      color: #6a1b9a;
+    }
+    .status-read {
+      background: #e0f2f1;
+      color: #00796b;
+    }
+    .btn-group {
+      display: flex;
+      gap: 8px;
+    }
+    .btn {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-primary {
+      background: #0f4c48;
+      color: #fff;
+    }
+    .btn-primary:hover {
+      background: #0a3a37;
+    }
+    .btn-secondary {
+      background: #dbe7df;
+      color: #173b39;
+    }
+    .btn-secondary:hover {
+      background: #c9d5cf;
+    }
+    .btn-danger {
+      background: #c62828;
+      color: #fff;
+    }
+    .btn-danger:hover {
+      background: #b71c1c;
+    }
+    .btn-success {
+      background: #2e7d32;
+      color: #fff;
+    }
+    .btn-success:hover {
+      background: #1b5e20;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #173b39;
+      font-size: 14px;
+    }
+    input, textarea, select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #dce4df;
+      border-radius: 6px;
+      font-size: 14px;
+      font-family: inherit;
+      transition: border-color 0.2s;
+    }
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: #0f4c48;
+      box-shadow: 0 0 0 3px rgba(15, 76, 72, 0.1);
+    }
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    @media (max-width: 768px) {
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+    }
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .modal.active {
+      display: flex;
+    }
+    .modal-content {
+      background: #fff;
+      border-radius: 12px;
+      padding: 30px;
+      max-width: 600px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid #dce4df;
+    }
+    .modal-header h2 {
+      margin: 0;
+      font-size: 18px;
+    }
+    .close-btn {
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: #647875;
+    }
+    .modal-footer {
+      display: flex;
+      gap: 10px;
+      margin-top: 25px;
+      padding-top: 20px;
+      border-top: 1px solid #dce4df;
+    }
+    .message {
+      padding: 15px;
+      border-radius: 6px;
+      margin-bottom: 20px;
+      font-size: 14px;
+      display: none;
+    }
+    .message.show {
+      display: block;
+    }
+    .message.success {
+      background: #e8f5e9;
+      color: #2e7d32;
+      border-left: 4px solid #2e7d32;
+    }
+    .message.error {
+      background: #ffebee;
+      color: #c62828;
+      border-left: 4px solid #c62828;
+    }
+    .message.info {
+      background: #e3f2fd;
+      color: #1565c0;
+      border-left: 4px solid #1565c0;
+    }
+    .no-data {
+      text-align: center;
+      padding: 40px 20px;
+      color: #647875;
+    }
+    .empty-state {
+      font-size: 48px;
+      margin-bottom: 10px;
+      opacity: 0.5;
+    }
+    .tab-buttons {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #dce4df;
+      overflow-x: auto;
+    }
+    .tab-btn {
+      padding: 12px 20px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      color: #647875;
+      border-bottom: 3px solid transparent;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .tab-btn:hover {
+      color: #173b39;
+    }
+    .tab-btn.active {
+      color: #0f4c48;
+      border-bottom-color: #0f4c48;
+    }
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: #647875;
+    }
+    .spinner {
+      border: 4px solid #dce4df;
+      border-top: 4px solid #0f4c48;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 15px;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="sidebar">
+    <div class="logo">R RelaxAtHome</div>
+    <ul class="nav-menu">
+      <li class="nav-item">
+        <a class="nav-link active" onclick="showPage('dashboard')">📊 Dashboard</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" onclick="showPage('appointments')">📅 Appointments</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" onclick="showPage('inquiries')">💬 Inquiries</a>
+      </li>
+      <div class="nav-section">
+        <div class="nav-section-title">Management</div>
+        <li class="nav-item">
+          <a class="nav-link" onclick="showPage('services')">🛀 Services</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" onclick="showPage('therapists')">👥 Therapists</a>
+        </li>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-title">Settings</div>
+        <li class="nav-item">
+          <a class="nav-link" onclick="showPage('settings')">⚙️ Business Settings</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" onclick="showPage('account')">👤 My Account</a>
+        </li>
+      </div>
+    </ul>
+  </div>
+
+  <div class="main-content">
+    <div class="topbar">
+      <h1>Admin Dashboard</h1>
+      <div class="user-section">
+        <div class="user-info">
+          <div class="user-email" id="userEmail">Loading...</div>
+          <div class="user-role">Administrator</div>
+        </div>
+        <button class="btn-logout" onclick="logout()">Logout</button>
+      </div>
+    </div>
+
+    <div class="content">
+      <!-- Dashboard Page -->
+      <div id="dashboard" class="page active">
+        <div class="message" id="message"></div>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-number" id="totalAppointments">0</div>
+            <div class="stat-label">Total Appointments</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number" id="totalInquiries">0</div>
+            <div class="stat-label">Customer Inquiries</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number" id="totalTherapists">0</div>
+            <div class="stat-label">Therapists</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number" id="totalServices">0</div>
+            <div class="stat-label">Services</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Upcoming Appointments</h2>
+          <table id="upcomingTable">
+            <thead>
+              <tr>
+                <th>Customer</th>
+                <th>Service</th>
+                <th>Date & Time</th>
+                <th>Therapist</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="upcomingBody">
+              <tr><td colspan="5" class="no-data">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="card">
+          <h2>Pending Inquiries</h2>
+          <table id="pendingTable">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Subject</th>
+                <th>Date</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="pendingBody">
+              <tr><td colspan="5" class="no-data">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Appointments Page -->
+      <div id="appointments" class="page">
+        <div class="message" id="appointmentsMessage"></div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+          <h2>Appointments</h2>
+          <button class="btn btn-primary" onclick="openAddAppointmentModal()">+ New Appointment</button>
+        </div>
+
+        <div class="tab-buttons">
+          <button class="tab-btn active" onclick="filterAppointments('all')">All</button>
+          <button class="tab-btn" onclick="filterAppointments('pending')">Pending</button>
+          <button class="tab-btn" onclick="filterAppointments('confirmed')">Confirmed</button>
+          <button class="tab-btn" onclick="filterAppointments('completed')">Completed</button>
+          <button class="tab-btn" onclick="filterAppointments('cancelled')">Cancelled</button>
+        </div>
+
+        <div class="card">
+          <table id="appointmentsTable">
+            <thead>
+              <tr>
+                <th>Customer</th>
+                <th>Phone</th>
+                <th>Service</th>
+                <th>Date & Time</th>
+                <th>Therapist</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="appointmentsBody">
+              <tr><td colspan="7" class="no-data">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Inquiries Page -->
+      <div id="inquiries" class="page">
+        <div class="message" id="inquiriesMessage"></div>
+        <h2 style="margin-bottom: 20px;">Customer Inquiries</h2>
+
+        <div class="tab-buttons">
+          <button class="tab-btn active" onclick="filterInquiries('all')">All</button>
+          <button class="tab-btn" onclick="filterInquiries('new')">New</button>
+          <button class="tab-btn" onclick="filterInquiries('read')">Read</button>
+          <button class="tab-btn" onclick="filterInquiries('responded')">Responded</button>
+        </div>
+
+        <div class="card">
+          <table id="inquiriesTable">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Subject</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="inquiriesBody">
+              <tr><td colspan="7" class="no-data">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Services Page -->
+      <div id="services" class="page">
+        <div class="message" id="servicesMessage"></div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+          <h2>Services</h2>
+          <button class="btn btn-primary" onclick="openAddServiceModal()">+ Add Service</button>
+        </div>
+
+        <div class="card">
+          <table id="servicesTable">
+            <thead>
+              <tr>
+                <th>Service Name</th>
+                <th>Description</th>
+                <th>Duration</th>
+                <th>Price</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="servicesBody">
+              <tr><td colspan="5" class="no-data">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Therapists Page -->
+      <div id="therapists" class="page">
+        <div class="message" id="therapistsMessage"></div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+          <h2>Therapists</h2>
+          <button class="btn btn-primary" onclick="openAddTherapistModal()">+ Add Therapist</button>
+        </div>
+
+        <div class="card">
+          <table id="therapistsTable">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Gender</th>
+                <th>Specialization</th>
+                <th>Phone</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="therapistsBody">
+              <tr><td colspan="6" class="no-data">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Business Settings Page -->
+      <div id="settings" class="page">
+        <div class="message" id="settingsMessage"></div>
+        <div class="card">
+          <h2>Business Settings</h2>
+          <form id="settingsForm" onsubmit="updateBusinessSettings(event)">
+            <div class="form-row">
+              <div class="form-group">
+                <label>Business Name</label>
+                <input type="text" id="businessName" required />
+              </div>
+              <div class="form-group">
+                <label>Business Hours</label>
+                <input type="text" id="businessHours" placeholder="e.g., 10:00 AM - 11:00 PM" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Service Areas (comma separated)</label>
+              <input type="text" id="serviceAreas" placeholder="e.g., Delhi, Noida, Gurugram" />
+            </div>
+
+            <div class="form-group">
+              <label>Max Appointments Per Day</label>
+              <input type="number" id="maxAppointments" min="1" value="20" />
+            </div>
+
+            <button type="submit" class="btn btn-primary">Save Settings</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Account Page -->
+      <div id="account" class="page">
+        <div class="message" id="accountMessage"></div>
+        <div class="card">
+          <h2>My Account</h2>
+          <div style="margin-bottom: 20px;">
+            <label>Email:</label>
+            <p id="accountEmail" style="padding: 10px; background: #f6f5f0; border-radius: 6px; margin-top: 5px;"></p>
+          </div>
+          <button class="btn btn-secondary" onclick="openChangePasswordModal()">Change Password</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modals -->
+  <div id="appointmentModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="appointmentModalTitle">Add Appointment</h2>
+        <button class="close-btn" onclick="closeModal('appointmentModal')">×</button>
+      </div>
+      <form id="appointmentForm" onsubmit="saveAppointment(event)">
+        <div class="form-group">
+          <label>Customer Name *</label>
+          <input type="text" id="apptCustomerName" required />
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Phone Number *</label>
+            <input type="tel" id="apptPhone" required />
+          </div>
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="apptEmail" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Service *</label>
+            <select id="apptService" required></select>
+          </div>
+          <div class="form-group">
+            <label>Duration *</label>
+            <input type="text" id="apptDuration" required />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Date *</label>
+            <input type="date" id="apptDate" required />
+          </div>
+          <div class="form-group">
+            <label>Time *</label>
+            <input type="time" id="apptTime" required />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Therapist</label>
+            <select id="apptTherapist"></select>
+          </div>
+          <div class="form-group">
+            <label>Status *</label>
+            <select id="apptStatus" required>
+              <option value="pending">Pending</option>
+              <option value="confirmed">Confirmed</option>
+              <option value="completed">Completed</option>
+              <option value="cancelled">Cancelled</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Notes</label>
+          <textarea id="apptNotes" rows="3"></textarea>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Save Appointment</button>
+          <button type="button" class="btn btn-secondary" onclick="closeModal('appointmentModal')">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="inquiryModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>View Inquiry</h2>
+        <button class="close-btn" onclick="closeModal('inquiryModal')">×</button>
+      </div>
+      <div id="inquiryDetails"></div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" onclick="markInquiryAsResponded()">Mark as Responded</button>
+        <button class="btn btn-danger" onclick="deleteCurrentInquiry()">Delete</button>
+        <button class="btn btn-secondary" onclick="closeModal('inquiryModal')">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="serviceModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="serviceModalTitle">Add Service</h2>
+        <button class="close-btn" onclick="closeModal('serviceModal')">×</button>
+      </div>
+      <form id="serviceForm" onsubmit="saveService(event)">
+        <div class="form-group">
+          <label>Service Name *</label>
+          <input type="text" id="serviceName" required />
+        </div>
+        <div class="form-group">
+          <label>Description *</label>
+          <textarea id="serviceDescription" rows="3" required></textarea>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Duration (e.g., 60 Minutes) *</label>
+            <input type="text" id="serviceDuration" required />
+          </div>
+          <div class="form-group">
+            <label>Price (₹) *</label>
+            <input type="number" id="servicePrice" min="0" required />
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Save Service</button>
+          <button type="button" class="btn btn-secondary" onclick="closeModal('serviceModal')">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="therapistModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="therapistModalTitle">Add Therapist</h2>
+        <button class="close-btn" onclick="closeModal('therapistModal')">×</button>
+      </div>
+      <form id="therapistForm" onsubmit="saveTherapist(event)">
+        <div class="form-group">
+          <label>Name *</label>
+          <input type="text" id="therapistName" required />
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Gender *</label>
+            <select id="therapistGender" required>
+              <option value="">Select</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Phone *</label>
+            <input type="tel" id="therapistPhone" required />
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Specialization *</label>
+          <input type="text" id="therapistSpecialization" placeholder="e.g., Swedish Massage, Deep Tissue" required />
+        </div>
+        <div class="form-group">
+          <label>Status *</label>
+          <select id="therapistStatus" required>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+          </select>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Save Therapist</button>
+          <button type="button" class="btn btn-secondary" onclick="closeModal('therapistModal')">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="changePasswordModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Change Password</h2>
+        <button class="close-btn" onclick="closeModal('changePasswordModal')">×</button>
+      </div>
+      <form id="changePasswordForm" onsubmit="changePassword(event)">
+        <div class="form-group">
+          <label>New Password *</label>
+          <input type="password" id="newPassword" required />
+          <div style="font-size: 12px; color: #647875; margin-top: 5px;">
+            ✓ Minimum 8 characters<br />
+            ✓ Mix of uppercase and lowercase<br />
+            ✓ At least one number
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Confirm Password *</label>
+          <input type="password" id="confirmNewPassword" required />
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Update Password</button>
+          <button type="button" class="btn btn-secondary" onclick="closeModal('changePasswordModal')">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="admin-lib.js"></script>
+  <script src="admin-dashboard.js"></script>
+</body>
+</html>
