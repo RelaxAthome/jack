@@ -23,6 +23,11 @@
       max-width: 450px;
       padding: 40px;
     }
+    @media (max-width: 600px) {
+      .login-container {
+        padding: 30px 20px;
+      }
+    }
     .login-header {
       text-align: center;
       margin-bottom: 30px;
@@ -73,6 +78,8 @@
       align-items: center;
       font-size: 13px;
       margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 10px;
     }
     .remember-forgot a {
       color: #0f4c48;
@@ -90,9 +97,14 @@
     }
     input[type="checkbox"] {
       width: auto;
+      cursor: pointer;
+    }
+    .button-group {
+      display: flex;
+      gap: 10px;
     }
     .btn-login {
-      width: 100%;
+      flex: 1;
       padding: 12px;
       background: #0f4c48;
       color: #fff;
@@ -102,18 +114,19 @@
       font-weight: 600;
       cursor: pointer;
       transition: all 0.2s;
-      margin-bottom: 15px;
     }
     .btn-login:hover {
       background: #0a3a37;
       transform: translateY(-2px);
       box-shadow: 0 4px 12px rgba(15, 76, 72, 0.3);
     }
-    .btn-login:active {
-      transform: translateY(0);
+    .btn-login:disabled {
+      background: #999;
+      cursor: not-allowed;
+      transform: none;
     }
     .btn-back {
-      width: 100%;
+      flex: 1;
       padding: 12px;
       background: #dbe7df;
       color: #173b39;
@@ -144,6 +157,12 @@
       background: #ffebee;
       color: #c62828;
       border-left: 4px solid #c62828;
+      display: block;
+    }
+    .message.info {
+      background: #e3f2fd;
+      color: #1565c0;
+      border-left: 4px solid #1565c0;
       display: block;
     }
     .no-account {
@@ -200,11 +219,13 @@
           <input type="checkbox" id="rememberMe" />
           <span>Remember me</span>
         </label>
-        <a href="#" id="forgotPasswordLink">Forgot password?</a>
+        <a href="admin-forgot-password.html">Forgot password?</a>
       </div>
 
-      <button type="submit" class="btn-login">Sign In</button>
-      <button type="button" class="btn-back" onclick="location.href='index.html'">← Back to Website</button>
+      <div class="button-group">
+        <button type="submit" class="btn-login" id="submitBtn">Sign In</button>
+        <button type="button" class="btn-back" onclick="location.href='index.html'">← Back</button>
+      </div>
     </form>
 
     <div class="no-account">
@@ -212,107 +233,62 @@
     </div>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/bcryptjs@2.4.3/dist/bcrypt.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="admin-lib.js"></script>
   <script>
     const form = document.getElementById('loginForm');
     const messageDiv = document.getElementById('message');
     const rememberMeCheckbox = document.getElementById('rememberMe');
-    const forgotPasswordLink = document.getElementById('forgotPasswordLink');
+    const submitBtn = document.getElementById('submitBtn');
 
-    // Load saved email if "Remember me" was checked
-    window.addEventListener('load', () => {
+    function showMessage(text, type) {
+      messageDiv.innerHTML = text;
+      messageDiv.className = `message ${type}`;
+    }
+
+    window.addEventListener('load', async () => {
       const savedEmail = localStorage.getItem('remember_admin_email');
       if (savedEmail) {
         document.getElementById('email').value = savedEmail;
         rememberMeCheckbox.checked = true;
       }
 
-      // Check if already logged in
-      const adminSession = sessionStorage.getItem('admin_session');
-      if (adminSession) {
+      const session = await checkAdminSession();
+      if (session) {
         location.href = 'admin-dashboard.html';
       }
     });
 
-    function showMessage(text, type) {
-      messageDiv.textContent = text;
-      messageDiv.className = `message ${type}`;
-    }
-
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
+      submitBtn.disabled = true;
 
       const email = document.getElementById('email').value.trim();
       const password = document.getElementById('password').value;
 
-      // Get stored credentials
-      const storedEmail = localStorage.getItem('admin_email');
-      const storedPasswordHash = localStorage.getItem('admin_password_hash');
-
-      if (!storedEmail) {
-        showMessage('No admin account found. Please <a href="admin-setup.html">create one first</a>.', 'error');
-        return;
-      }
-
-      if (email !== storedEmail) {
-        showMessage('Invalid email or password', 'error');
-        return;
-      }
-
       try {
-        // Verify password against hash
-        const passwordMatch = await bcrypt.compare(password, storedPasswordHash);
+        showMessage('Signing in...', 'info');
+        const result = await adminSignIn(email, password);
 
-        if (!passwordMatch) {
-          showMessage('Invalid email or password', 'error');
-          return;
-        }
-
-        // Create session token (simple)
-        const sessionToken = btoa(email + ':' + Date.now());
-        sessionStorage.setItem('admin_session', sessionToken);
-        sessionStorage.setItem('admin_email', email);
-
-        // Save email if "Remember me" is checked
-        if (rememberMeCheckbox.checked) {
-          localStorage.setItem('remember_admin_email', email);
+        if (result.success) {
+          if (rememberMeCheckbox.checked) {
+            localStorage.setItem('remember_admin_email', email);
+          } else {
+            localStorage.removeItem('remember_admin_email');
+          }
+          showMessage('✓ Signed in successfully', 'success');
+          setTimeout(() => {
+            location.href = 'admin-dashboard.html';
+          }, 500);
         } else {
-          localStorage.removeItem('remember_admin_email');
+          showMessage('Error: ' + result.error, 'error');
+          submitBtn.disabled = false;
         }
-
-        showMessage('✓ Logging in...', 'success');
-        setTimeout(() => {
-          location.href = 'admin-dashboard.html';
-        }, 500);
       } catch (error) {
-        showMessage('Error during login. Please try again.', 'error');
-        console.error(error);
+        showMessage('Error: ' + error.message, 'error');
+        submitBtn.disabled = false;
       }
-    });
-
-    // Password reset functionality
-    forgotPasswordLink.addEventListener('click', (e) => {
-      e.preventDefault();
-      const newPassword = prompt('Enter your new password (must be 8+ chars with uppercase, lowercase, and number):');
-      if (!newPassword) return;
-
-      const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
-      if (!passwordRegex.test(newPassword)) {
-        alert('Password must be at least 8 characters with uppercase, lowercase, and number');
-        return;
-      }
-
-      const confirmPassword = prompt('Confirm your new password:');
-      if (newPassword !== confirmPassword) {
-        alert('Passwords do not match');
-        return;
-      }
-
-      bcrypt.hash(newPassword, 12).then((hash) => {
-        localStorage.setItem('admin_password_hash', hash);
-        showMessage('✓ Password reset successfully', 'success');
-        document.getElementById('password').value = '';
-      });
     });
   </script>
 </body>
