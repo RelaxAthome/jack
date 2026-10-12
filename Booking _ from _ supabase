@@ -1,0 +1,39 @@
+// booking-form-supabase-snippet.js
+//
+// IMPORTANT: I could not read your existing script.js/index.html from here
+// (no live access to your GitHub repo), so I have NOT edited those files
+// directly — that avoids any risk of breaking your current WhatsApp
+// booking flow. This file is optional, additive code for you to paste in
+// yourself wherever your booking form's submit handler currently is.
+//
+// What it does: when your visitor submits the booking form, in ADDITION
+// to your existing WhatsApp redirect, it also saves the inquiry to
+// Supabase so it shows up in admin-dashboard.html.
+//
+// How to use:
+// 1. Add this near the top of index.html, before </body>, after your
+//    existing scripts:
+//      <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+//      <script src="supabase-client.js"></script>
+//      <script src="booking-form-supabase-snippet.js"></script>
+//
+// 2. Replace FORM_ID, NAME_FIELD_ID, PHONE_FIELD_ID, etc. below with the
+//    actual id="..." attributes your form/inputs already use in index.html.
+
+document.getElementById("FORM_ID")?.addEventListener("submit", async function () {
+  // Does NOT call preventDefault() — your existing WhatsApp redirect logic
+  // keeps running exactly as it does today. This just also logs the
+  // inquiry to Supabase in the background.
+  try {
+    await supabaseClient.from("appointment_inquiries").insert({
+      name: document.getElementById("NAME_FIELD_ID")?.value || "",
+      phone: document.getElementById("PHONE_FIELD_ID")?.value || "",
+      service: document.getElementById("SERVICE_FIELD_ID")?.value || "",
+      message: document.getElementById("MESSAGE_FIELD_ID")?.value || "",
+    });
+  } catch (err) {
+    console.warn("Could not save inquiry to Supabase:", err);
+    // Intentionally does not block or alert the user — WhatsApp booking
+    // must keep working even if this background save fails.
+  }
+});
