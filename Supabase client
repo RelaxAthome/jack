@@ -1,0 +1,9 @@
+
+ // supabase-client.js
+const SUPABASE_URL = "https://jtiqhcezrawmhvlskmgs.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_gXxi-Cmyf3d1aMin3ICXWw_DkcLpFSA";
+
+const supabaseClient = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY
+);
