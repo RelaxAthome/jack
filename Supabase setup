@@ -1,0 +1,54 @@
+-- schema.sql
+-- Run this in Supabase Dashboard -> SQL Editor -> New query -> Run.
+
+-- 1. Table to store appointment inquiries submitted from the website.
+create table if not exists public.appointment_inquiries (
+  id uuid primary key default gen_random_uuid(),
+  name text not null,
+  phone text not null,
+  service text,
+  message text,
+  status text not null default 'new' check (status in ('new', 'contacted', 'closed')),
+  created_at timestamptz not null default now()
+);
+
+-- 2. Enable Row Level Security (required — without this, RLS policies
+--    below do nothing and the table is either fully open or fully closed
+--    depending on your project defaults).
+alter table public.appointment_inquiries enable row level security;
+
+-- 3. Allow ANYONE (including anonymous website visitors) to INSERT a new
+--    inquiry. This is what lets your public booking form work without
+--    requiring visitors to log in.
+create policy "Anyone can submit an inquiry"
+  on public.appointment_inquiries
+  for insert
+  to anon
+  with check (true);
+
+-- 4. Only LOGGED-IN admin users can read inquiries (powers the dashboard).
+create policy "Authenticated users can view inquiries"
+  on public.appointment_inquiries
+  for select
+  to authenticated
+  using (true);
+
+-- 5. Only logged-in admin users can update status (e.g. mark as contacted).
+create policy "Authenticated users can update inquiries"
+  on public.appointment_inquiries
+  for update
+  to authenticated
+  using (true)
+  with check (true);
+
+-- 6. No one gets delete access by default (intentional — prevents
+--    accidental data loss from the dashboard). If you want delete access
+--    later, add a similar "for delete to authenticated" policy.
+
+-- NOTE on creating your admin login:
+-- This schema does NOT create an admin user. You create that separately:
+-- Supabase Dashboard -> Authentication -> Users -> Add user
+-- Use that email + password to log in at admin-login.html.
+-- Any user you add this way can see ALL inquiries (this is a single-admin
+-- setup). If you later need multiple admins with different permissions,
+-- that requires an additional roles table — ask if you need that.
