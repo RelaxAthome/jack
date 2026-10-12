@@ -15,6 +15,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="premium.css" />
   <script type="application/ld+json" id="business-schema"></script>
 </head>
 <body>
@@ -24,44 +25,192 @@
       <a class="brand" href="#home" aria-label="RelaxAtHome home"><span class="brand-mark">R</span><span>Relax<span>At</span>Home<small>WELLNESS AT YOUR DOORSTEP</small></span></a>
       <button class="menu-toggle" aria-expanded="false" aria-controls="site-menu" aria-label="Open menu"><span></span><span></span><span></span></button>
       <div class="nav-links" id="site-menu">
-        <a href="#home">Home</a><a href="#services">Services</a><a href="#pricing">Pricing</a><a href="#how-it-works">How It Works</a><a href="#about">About Us</a><a href="#faq">FAQ</a><a href="#contact">Contact</a>
+        <a href="#home">Home</a>
+        <a href="#services">Services</a>
+        <a href="#pricing">Pricing</a>
+        <a href="#how-it-works">How It Works</a>
+        <a href="#about">About Us</a>
+        <a href="#faq">FAQ</a>
+        <a href="#contact">Contact</a>
         <a class="btn btn-small btn-primary" href="#booking">Book Now <span>↗</span></a>
+        <a class="admin-link" href="admin-login.html">Admin Sign In</a>
       </div>
     </nav>
   </header>
 
   <main>
     <section class="hero" id="home">
-      <div class="hero-overlay"></div><div class="container hero-content">
+      <div class="hero-overlay"></div>
+      <div class="container hero-content">
         <p class="eyebrow light">PERSONAL WELLNESS · AT YOUR PREFERRED LOCATION</p>
         <h1>Professional Massage<br /><em>at Your Doorstep.</em></h1>
         <p class="hero-copy">Relax, recover and rejuvenate with professional massage services delivered to your home, hotel or preferred location.</p>
         <div class="hero-actions"><a class="btn btn-accent" href="#booking">Book Now <span>↗</span></a><a class="btn btn-ghost" href="#services">Explore Services <span>↓</span></a></div>
-        <div class="trust-row"><span>✓ Professional Service</span><span>✓ Home &amp; Hotel Visits</span><span>✓ Male &amp; Female Customers</span><span>✓ Easy WhatsApp Booking</span></div>
+        <div class="trust-row"><span>✓ Professional Service</span><span>✓ Home &amp; Hotel Visits</span><span>✓ Male &amp; Female Therapists</span><span>✓ Easy WhatsApp Booking</span></div>
       </div>
       <div class="scroll-note">SCROLL TO EXPLORE <span>↓</span></div>
     </section>
 
-    <section class="intro section"><div class="container intro-grid"><div><p class="eyebrow">A BETTER WAY TO UNWIND</p><h2>Wellness that fits<br /><em>your life.</em></h2></div><p>From a busy work[...]
+    <section class="intro section">
+      <div class="container intro-grid">
+        <div>
+          <p class="eyebrow">A BETTER WAY TO UNWIND</p>
+          <h2>Wellness that fits<br /><em>your life.</em></h2>
+        </div>
+        <p>From a busy workday to post-exercise recovery, our therapists bring a calm, professional spa experience to your preferred location.</p>
+      </div>
+    </section>
 
-    <section class="section services-section" id="services"><div class="container"><div class="section-heading"><div><p class="eyebrow">OUR SERVICES</p><h2>Carefully chosen<br /><em>for how you fe[...]
+    <section class="section services-section" id="services">
+      <div class="container">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">OUR SERVICES</p>
+            <h2>Carefully chosen<br /><em>for how you feel.</em></h2>
+          </div>
+        </div>
+        <div id="service-grid" class="service-grid"></div>
+      </div>
+    </section>
 
-    <section class="pricing section" id="pricing"><div class="container"><div class="pricing-heading"><div><p class="eyebrow">SIMPLE, TRANSPARENT PRICING</p><h2>Make time for <em>yourself.</em></h[...]
+    <section class="pricing section" id="pricing">
+      <div class="container">
+        <div class="pricing-heading">
+          <div>
+            <p class="eyebrow">SIMPLE, TRANSPARENT PRICING</p>
+            <h2>Make time for <em>yourself.</em></h2>
+          </div>
+        </div>
+        <div id="price-grid" class="price-grid"></div>
+      </div>
+    </section>
 
-    <section class="section process" id="how-it-works"><div class="container"><div class="center-heading"><p class="eyebrow">HOW IT WORKS</p><h2>Relaxation, made <em>simple.</em></h2></div><div cl[...]
+    <section class="section process" id="how-it-works">
+      <div class="container">
+        <div class="center-heading">
+          <p class="eyebrow">HOW IT WORKS</p>
+          <h2>Relaxation, made <em>simple.</em></h2>
+        </div>
+        <ol class="process-list">
+          <li>Choose your service</li>
+          <li>Pick a date &amp; time</li>
+          <li>We send a licensed therapist to your location</li>
+        </ol>
+      </div>
+    </section>
 
-    <section class="features section"><div class="container features-grid"><div class="feature-intro"><p class="eyebrow">THE RELAXATHOME DIFFERENCE</p><h2>Comfort. Care.<br /><em>Confidence.</em><[...]
+    <section class="features section">
+      <div class="container features-grid">
+        <div class="feature-intro">
+          <p class="eyebrow">THE RELAXATHOME DIFFERENCE</p>
+          <h2>Comfort. Care.<br /><em>Confidence.</em></h2>
+        </div>
+        <div class="feature-list">
+          <div class="feature"><strong>Licensed therapists</strong><p>Experienced male &amp; female therapists selected for professionalism and care.</p></div>
+          <div class="feature"><strong>Sanitised equipment</strong><p>Clean linens and safe practices at every visit.</p></div>
+          <div class="feature"><strong>Easy booking</strong><p>Book online or via WhatsApp.</p></div>
+        </div>
+      </div>
+    </section>
 
-    <section class="about section" id="about"><div class="container about-grid"><div class="about-image"></div><div class="about-copy"><p class="eyebrow">ABOUT RELAXATHOME</p><h2>Wellbeing, wherev[...]
+    <section class="about section" id="about">
+      <div class="container about-grid">
+        <div class="about-image" style="background-image:url('https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=1200&q=80');"></div>
+        <div class="about-copy">
+          <p class="eyebrow">ABOUT RELAXATHOME</p>
+          <h2>Wellbeing, wherever<br /><em>you are.</em></h2>
+          <p>RelaxAtHome provides professional in-home massage and wellness services across Delhi, Noida and Gurugram. Our carefully selected therapists are insured and trained to provide a safe, high-quality spa experience in the comfort of your own space.</p>
+        </div>
+      </div>
+    </section>
 
-    <section class="booking section" id="booking"><div class="container booking-grid"><div class="booking-intro"><p class="eyebrow light">READY WHEN YOU ARE</p><h2>Reserve your<br /><em>moment.</e[...]
+    <section class="booking section" id="booking">
+      <div class="container booking-grid">
+        <div class="booking-intro">
+          <p class="eyebrow light">READY WHEN YOU ARE</p>
+          <h2>Reserve your<br /><em>moment.</em></h2>
+          <p>Select a service and preferred schedule. We will confirm your booking shortly.</p>
+        </div>
+        <form id="booking-form" class="booking-form" aria-label="Book an appointment">
+          <label for="name">Full name</label>
+          <input id="name" name="name" required />
 
-    <section class="faq section" id="faq"><div class="container faq-grid"><div><p class="eyebrow">QUESTIONS, ANSWERED</p><h2>Good to<br /><em>know.</em></h2></div><div class="accordion"><details><[...]
+          <label for="mobile">Mobile number</label>
+          <input id="mobile" name="mobile" inputmode="tel" required />
 
-    <section class="contact section" id="contact"><div class="container contact-card"><div><p class="eyebrow light">LET'S CONNECT</p><h2>Your calm is<br /><em>one message away.</em></h2></div><div[...]
+          <label for="service-select">Service</label>
+          <select id="service-select" name="service" required></select>
+
+          <label for="date">Date</label>
+          <input id="date" name="date" type="date" required />
+
+          <label for="time">Preferred time</label>
+          <input id="time" name="time" type="time" required />
+
+          <label for="notes">Notes (optional)</label>
+          <textarea id="notes" name="notes" rows="3"></textarea>
+
+          <div class="booking-actions">
+            <button type="submit" class="btn btn-primary">Confirm booking</button>
+            <a id="wa-book-now" class="btn btn-ghost" target="_blank" rel="noopener">Book on WhatsApp</a>
+          </div>
+
+          <div id="booking-status" role="status" aria-live="polite"></div>
+        </form>
+      </div>
+    </section>
+
+    <section class="faq section" id="faq">
+      <div class="container faq-grid">
+        <div>
+          <p class="eyebrow">QUESTIONS, ANSWERED</p>
+          <h2>Good to<br /><em>know.</em></h2>
+        </div>
+        <div class="accordion">
+          <details><summary>Are therapists insured and vetted?</summary><p>Yes — all therapists are vetted, trained and insured.</p></details>
+        </div>
+      </div>
+    </section>
+
+    <section class="contact section" id="contact">
+      <div class="container contact-card">
+        <div>
+          <p class="eyebrow light">LET'S CONNECT</p>
+          <h2>Your calm is<br /><em>one message away.</em></h2>
+        </div>
+        <div class="contact-info">
+          <p>Phone: <a href="tel:+918052056082">+91 80520 56082</a></p>
+          <p>Email: <a href="mailto:mishraanurag0349@gmail.com">mishraanurag0349@gmail.com</a></p>
+          <p>Service area: Delhi · Noida · Gurugram</p>
+        </div>
+      </div>
+    </section>
   </main>
-  <footer><div class="container footer-grid"><div class="footer-brand"><a class="brand" href="#home"><span class="brand-mark">R</span><span>Relax<span>At</span>Home<small>WELLNESS AT YOUR DOORSTEP[...]
-  <a class="floating-whatsapp" data-whatsapp href="#" aria-label="Book on WhatsApp">◉<span>Book on WhatsApp</span></a>
-  <script src="config.js"></script><script src="script.js"></script>
+
+  <footer>
+    <div class="container footer-grid">
+      <div class="footer-brand"><a class="brand" href="#home"><span class="brand-mark">R</span><span>Relax<span>At</span>Home</span></a>
+        <p class="muted">Professional in-home massage &amp; wellness services</p>
+      </div>
+      <div class="footer-links">
+        <a href="#services">Services</a>
+        <a href="#pricing">Pricing</a>
+        <a href="#booking">Book an Appointment</a>
+        <a href="admin-login.html">Admin Sign In</a>
+      </div>
+      <div class="footer-contact">
+        <p><strong>Call</strong> <a href="tel:+918052056082">+91 80520 56082</a></p>
+        <p><strong>Email</strong> <a href="mailto:mishraanurag0349@gmail.com">mishraanurag0349@gmail.com</a></p>
+      </div>
+    </div>
+    <div class="container small muted">© <span id="year"></span> RelaxAtHome — All rights reserved.</div>
+  </footer>
+
+  <a class="floating-whatsapp" data-whatsapp aria-label="Book on WhatsApp">◉<span>Book on WhatsApp</span></a>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-client.js"></script>
+  <script src="config.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>

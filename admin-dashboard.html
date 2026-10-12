@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Admin Dashboard — RelaxAtHome</title>
+<link rel="stylesheet" href="styles.css" />
+<style>
+  .admin-wrap{max-width:900px;margin:40px auto;padding:0 16px}
+  .admin-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}
+  #logout-btn{padding:8px 16px;border:none;border-radius:6px;background:#c0392b;color:#fff;cursor:pointer}
+  table{width:100%;border-collapse:collapse}
+  th, td{text-align:left;padding:10px;border-bottom:1px solid #eee;font-size:0.9rem}
+  th{background:#f7f7f7}
+  .status-pill{padding:3px 10px;border-radius:12px;font-size:0.8rem}
+  .status-new{background:#fff3cd;color:#856404}
+  .status-contacted{background:#d4edda;color:#155724}
+  .status-closed{background:#e2e3e5;color:#383d41}
+  select.status-select{padding:4px;border-radius:4px}
+  #loading, #empty-state{padding:24px;text-align:center;color:#777}
+</style>
+</head>
+<body>
+
+<div class="admin-wrap">
+  <div class="admin-header">
+    <h1>Appointment Inquiries</h1>
+    <button id="logout-btn">Log out</button>
+  </div>
+
+  <div id="loading">Loading...</div>
+  <div id="empty-state" style="display:none;">No inquiries yet.</div>
+
+  <table id="inquiries-table" style="display:none;">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Phone</th>
+        <th>Service</th>
+        <th>Message</th>
+        <th>Received</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody id="inquiries-body"></tbody>
+  </table>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-client.js"></script>
+<script>
+  (async function init() {
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if (!session) {
+      window.location.href = "admin-login.html";
+      return;
+    }
+    await loadInquiries();
+  })();
+
+  document.getElementById("logout-btn").addEventListener("click", async () => {
+    await supabaseClient.auth.signOut();
+    window.location.href = "admin-login.html";
+  });
+
+  async function loadInquiries() {
+    const loadingEl = document.getElementById("loading");
+    const emptyEl = document.getElementById("empty-state");
+    const tableEl = document.getElementById("inquiries-table");
+    const bodyEl = document.getElementById("inquiries-body");
+
+    const { data, error } = await supabaseClient
+      .from("appointment_inquiries")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    loadingEl.style.display = "none";
+
+    if (error) {
+      loadingEl.textContent = "Error loading inquiries: " + error.message;
+      loadingEl.style.display = "block";
+      return;
+    }
+
+    if (!data || data.length === 0) {
+      emptyEl.style.display = "block";
+      return;
+    }
+
+    tableEl.style.display = "table";
+    bodyEl.innerHTML = "";
+
+    data.forEach((row) => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${escapeHtml(row.name || "")}</td>
+        <td>${escapeHtml(row.phone || "")}</td>
+        <td>${escapeHtml(row.service || "")}</td>
+        <td>${escapeHtml(row.message || "")}</td>
+        <td>${new Date(row.created_at).toLocaleString()}</td>
+        <td>
+          <select class="status-select" data-id="${row.id}">
+            <option value="new" ${row.status === "new" ? "selected" : ""}>New</option>
+            <option value="contacted" ${row.status === "contacted" ? "selected" : ""}>Contacted</option>
+            <option value="closed" ${row.status === "closed" ? "selected" : ""}>Closed</option>
+          </select>
+        </td>
+      `;
+      bodyEl.appendChild(tr);
+    });
+
+    document.querySelectorAll(".status-select").forEach((sel) => {
+      sel.addEventListener("change", async (e) => {
+        const id = e.target.getAttribute("data-id");
+        const newStatus = e.target.value;
+        const { error } = await supabaseClient
+          .from("appointment_inquiries")
+          .update({ status: newStatus })
+          .eq("id", id);
+        if (error) alert("Failed to update status: " + error.message);
+      });
+    });
+  }
+
+  function escapeHtml(str) {
+    const div = document.createElement("div");
+    div.textContent = str;
+    return div.innerHTML;
+  }
+</script>
+
+</body>
+</html>
